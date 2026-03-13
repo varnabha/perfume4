@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Storeify Watches</title>
+    <meta name="description" content="Admin panel login for Storeify Watches.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --accent: #e94560;
+        }
+    </style>
+</head>
+<body class="admin-login-body">
+    <div class="admin-login-card">
+        <div class="admin-login-logo">
+            <div class="admin-login-logo-icon">⌚</div>
+            <h1>Storeify Admin</h1>
+            <p>Sign in to manage your store</p>
+        </div>
+        
+        <form class="admin-login-form" id="login-form">
+            <div class="admin-form-group">
+                <label class="admin-form-label">Password <span>*</span></label>
+                <input type="password" 
+                       class="admin-form-input" 
+                       id="password" 
+                       placeholder="Enter admin password"
+                       required
+                       autocomplete="current-password">
+                <p class="admin-form-hint">Default password: admin123</p>
+            </div>
+            
+            <button type="submit" class="admin-login-btn">
+                Sign In
+            </button>
+        </form>
+        
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="../index.html" style="color: #6b7280; font-size: 0.875rem;">← Back to Store</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../config/config.js"></script>
+    <script>
+        // Check if already logged in
+        function checkAuth() {
+            const session = localStorage.getItem('adminSession');
+            if (session) {
+                const sessionData = JSON.parse(session);
+                if (sessionData.expires > Date.now()) {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    localStorage.removeItem('adminSession');
+                }
+            }
+        }
+
+        // Handle login
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            
+            if (password === CONFIG.admin.password) {
+                // Create session
+                const session = {
+                    loggedIn: true,
+                    expires: Date.now() + CONFIG.admin.sessionDuration
+                };
+                localStorage.setItem('adminSession', JSON.stringify(session));
+                
+                // Redirect to dashboard
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Invalid password. Please try again.');
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            }
+        });
+
+        // Check auth on load
+        checkAuth();
+    </script>
+</body>
+</html>

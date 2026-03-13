@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Storeify Watches</title>
+    <meta name="description" content="Admin dashboard for managing Storeify Watches products.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <style>
+        :root {
+            --gold: #c9a962;
+            --accent: #c9a962;
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="admin-sidebar-header">
+                <div class="admin-sidebar-logo">⌚</div>
+                <div>
+                    <div class="admin-sidebar-title">Storeify</div>
+                    <div class="admin-sidebar-subtitle">Admin Panel</div>
+                </div>
+            </div>
+            
+            <nav class="admin-nav">
+                <div class="admin-nav-section">Main</div>
+                <a href="dashboard.html" class="admin-nav-item active">
+                    <span class="admin-nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#products" class="admin-nav-item" onclick="showSection('products')">
+                    <span class="admin-nav-icon">📦</span>
+                    <span>Products</span>
+                </a>
+                
+                <div class="admin-nav-section">Management</div>
+                <a href="../index.html" target="_blank" class="admin-nav-item">
+                    <span class="admin-nav-icon">🌐</span>
+                    <span>View Store</span>
+                </a>
+                <a href="#" class="admin-nav-item" onclick="logout()">
+                    <span class="admin-nav-icon">🚪</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="admin-header-left">
+                    <button class="admin-menu-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1 class="admin-header-title">Dashboard</h1>
+                </div>
+                <div class="admin-header-right">
+                    <div class="admin-user">
+                        <div class="admin-user-avatar">A</div>
+                        <div class="admin-user-info">
+                            <div class="admin-user-name">Admin</div>
+                            <div class="admin-user-role">Store Manager</div>
+                        </div>
+                    </div>
+                    <button class="admin-logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="admin-content">
+                <!-- Stats Section -->
+                <div class="admin-stats-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon primary">📦</div>
+                        <div class="admin-stat-info">
+                            <h3 id="total-products">0</h3>
+                            <p>Total Products</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon success">✓</div>
+                        <div class="admin-stat-info">
+                            <h3 id="in-stock">0</h3>
+                            <p>In Stock</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon warning">⚠</div>
+                        <div class="admin-stat-info">
+                            <h3 id="low-stock">0</h3>
+                            <p>Low Stock</p>
+                        </div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-icon danger">🔥</div>
+                        <div class="admin-stat-info">
+                            <h3 id="featured-count">0</h3>
+                            <p>Featured</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div class="admin-card" id="products-section">
+                    <div class="admin-card-header">
+                        <h2 class="admin-card-title">Products</h2>
+                        <button class="btn btn-primary" onclick="openAddModal()">
+                            <span>+</span> Add Product
+                        </button>
+                    </div>
+                    <div class="admin-card-body">
+                        <!-- Search & Filter -->
+                        <div class="admin-search-filter">
+                            <div class="admin-search-input">
+                                <input type="text" id="product-search" placeholder="Search products...">
+                            </div>
+                            <select class="admin-form-select" id="category-filter" style="width: 150px;">
+                                <option value="">All Categories</option>
+                                <option value="watches">Watches</option>
+                                <option value="perfumes">Perfumes</option>
+                                <option value="sunglasses">Sunglasses</option>
+                                <option value="couple-accessories">Couple Accessories</option>
+                                <option value="lifestyle">Lifestyle</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Products Table -->
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>Price</th>
+                                        <th>Stock</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-table-body">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Empty State -->
+                        <div class="admin-empty-state" id="empty-state" style="display: none;">
+                            <div class="admin-empty-state-icon">📦</div>
+                            <h3>No Products Found</h3>
+                            <p>Start by adding your first product to the store.</p>
+                            <button class="btn btn-primary mt-3" onclick="openAddModal()">Add Product</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="admin-modal-overlay" id="product-modal">
+        <div class="admin-modal" style="max-width: 900px;">
+            <div class="admin-modal-header">
+                <h3 class="admin-modal-title" id="modal-title">Add Product</h3>
+                <button class="admin-modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="admin-modal-body">
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Product Name <span>*</span></label>
+                            <input type="text" class="admin-form-input" id="product-name" required placeholder="Enter product name">
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Category <span>*</span></label>
+                            <select class="admin-form-select" id="product-category" required>
+                                <option value="">Select Category</option>
+                                <option value="watches">Watches</option>
+                                <option value="perfumes">Perfumes</option>
+                                <option value="sunglasses">Sunglasses</option>
+                                <option value="couple-accessories">Couple Accessories</option>
+                                <option value="lifestyle">Lifestyle</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Main Price (₹) <span>*</span></label>
+                            <input type="number" class="admin-form-input" id="product-price" min="0" step="0.01" required placeholder="2999">
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Discount Price (₹)</label>
+                            <input type="number" class="admin-form-input" id="product-discount" min="0" step="0.01" placeholder="Leave empty for no discount">
+                            <p class="admin-form-hint">Leave empty for no discount</p>
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Stock Quantity <span>*</span></label>
+                            <input type="number" class="admin-form-input" id="product-stock" min="0" required placeholder="50">
+                        </div>
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Product Image</label>
+                        <div class="admin-image-upload" id="image-upload-area" onclick="document.getElementById('product-image-file').click()">
+                            <img src="" alt="" class="admin-image-preview" id="image-preview" style="display: none;">
+                            <div class="admin-image-upload-text" id="upload-text">
+                                <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">📷</span>
+                                <span>Click to upload</span> or drag and drop<br>
+                                <small>PNG, JPG up to 5MB</small>
+                            </div>
+                            <div class="admin-image-upload-progress" id="upload-progress" style="display: none;">
+                                <div style="width: 100%; height: 4px; background: #e5e7eb; border-radius: 2px; margin-top: 1rem;">
+                                    <div style="width: 0%; height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s;" id="progress-bar"></div>
+                                </div>
+                                <p style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-muted);">Uploading...</p>
+                            </div>
+                        </div>
+                        <input type="file" id="product-image-file" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+                        <input type="hidden" id="product-image-url">
+                        <p class="admin-form-hint" id="image-hint" style="display: none;">Click on image to change</p>
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Description</label>
+                        <textarea class="admin-form-textarea" id="product-description" placeholder="Enter product description..."></textarea>
+                    </div>
+                    
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Color Options</label>
+                        <div id="color-options-container">
+                            <!-- Color inputs will be added here -->
+                        </div>
+                        <button type="button" class="admin-add-color-btn" onclick="addColorInput()">
+                            <span>+</span> Add Color
+                        </button>
+                    </div>
+                    
+                    <div class="admin-form-row">
+                        <div class="admin-form-group">
+                            <label class="admin-checkbox">
+                                <input type="checkbox" id="product-featured">
+                                <span>Featured Product</span>
+                            </label>
+                        </div>
+                        <div class="admin-form-group">
+                            <label class="admin-form-label">Tags (comma separated)</label>
+                            <input type="text" class="admin-form-input" id="product-tags" placeholder="e.g. premium, luxury, new">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="admin-modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProduct()" id="save-btn">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="admin-modal-overlay" id="delete-modal">
+        <div class="admin-modal" style="max-width: 400px;">
+            <div class="admin-modal-header">
+                <h3 class="admin-modal-title">Confirm Delete</h3>
+                <button class="admin-modal-close" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="admin-modal-body">
+                <p>Are you sure you want to delete this product? This action cannot be undone.</p>
+                <input type="hidden" id="delete-product-id">
+            </div>
+            <div class="admin-modal-footer">
+                <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-accent" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="../config/config.js"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        let allProducts = [];
+        let filteredProducts = [];
+        let editingProductId = null;
+        let selectedImageFile = null;
+
+        // Check authentication
+        function checkAuth() {
+            const session = localStorage.getItem('adminSession');
+            if (!session) {
+                window.location.href = 'index.html';
+                return false;
+            }
+            
+            const sessionData = JSON.parse(session);
+            if (sessionData.expires <= Date.now()) {
+                localStorage.removeItem('adminSession');
+                window.location.href = 'index.html';
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('adminSession');
+            window.location.href = 'index.html';
+        }
+
+        // Toggle sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // Load dashboard stats
+        async function loadStats() {
+            try {
+                const products = await supabaseDB.getAllProducts({ limit: 1000 });
+                
+                document.getElementById('total-products').textContent = products.length;
+                document.getElementById('in-stock').textContent = products.filter(p => p.stock_quantity > 10).length;
+                document.getElementById('low-stock').textContent = products.filter(p => p.stock_quantity > 0 && p.stock_quantity <= 10).length;
+                document.getElementById('featured-count').textContent = products.filter(p => p.featured).length;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load products
+        async function loadProducts() {
+            const tbody = document.getElementById('products-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" class="admin-loading"><div class="admin-spinner"></div></td></tr>';
+            
+            try {
+                const products = await supabaseDB.getAllProducts({ limit: 1000 });
+                allProducts = products;
+                filteredProducts = products;
+                
+                renderProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">Error loading products</td></tr>';
+            }
+        }
+
+        // Render products table
+        function renderProducts() {
+            const tbody = document.getElementById('products-table-body');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (filteredProducts.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            tbody.innerHTML = filteredProducts.map(product => {
+                const finalPrice = product.discount_price || product.main_price;
+                const hasDiscount = product.discount_price && product.discount_price < product.main_price;
+                
+                let stockBadge = '';
+                if (product.stock_quantity <= 0) {
+                    stockBadge = '<span class="admin-badge danger">Out of Stock</span>';
+                } else if (product.stock_quantity < 10) {
+                    stockBadge = `<span class="admin-badge warning">${product.stock_quantity} left</span>`;
+                } else {
+                    stockBadge = '<span class="admin-badge success">In Stock</span>';
+                }
+                
+                return `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <img src="${product.product_image_url || '../assets/images/placeholder.svg'}" 
+                                     alt="${product.product_name}" 
+                                     class="admin-product-img"
+                                     onerror="this.src='../assets/images/placeholder.svg'">
+                                <div>
+                                    <div class="admin-product-name">${product.product_name}</div>
+                                    ${product.featured ? '<span class="admin-badge" style="background: #fef3c7; color: #d97706; margin-top: 0.25rem;">Featured</span>' : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="admin-product-category">${product.category}</span></td>
+                        <td>
+                            <div>₹${parseFloat(finalPrice).toLocaleString('en-IN')}</div>
+                            ${hasDiscount ? `<small style="text-decoration: line-through; color: #9ca3af;">₹${parseFloat(product.main_price).toLocaleString('en-IN')}</small>` : ''}
+                        </td>
+                        <td>${product.stock_quantity}</td>
+                        <td>${stockBadge}</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a href="../pages/product.html?id=${product.id}" target="_blank" class="admin-btn admin-btn-view" title="View">👁</a>
+                                <button class="admin-btn admin-btn-edit" onclick="openEditModal(${product.id})" title="Edit">✎</button>
+                                <button class="admin-btn admin-btn-delete" onclick="openDeleteModal(${product.id})" title="Delete">🗑</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter products
+        function filterProducts() {
+            const searchTerm = document.getElementById('product-search').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            
+            filteredProducts = allProducts.filter(product => {
+                const matchesSearch = !searchTerm || 
+                    product.product_name.toLowerCase().includes(searchTerm) ||
+                    product.short_description?.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || product.category === categoryFilter;
+                
+                return matchesSearch && matchesCategory;
+            });
+            
+            renderProducts();
+        }
+
+        // Modal functions
+        function openAddModal() {
+            editingProductId = null;
+            selectedImageFile = null;
+            document.getElementById('modal-title').textContent = 'Add Product';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-image-url').value = '';
+            resetImageUpload();
+            document.getElementById('color-options-container').innerHTML = '';
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        async function openEditModal(productId) {
+            editingProductId = productId;
+            selectedImageFile = null;
+            const product = allProducts.find(p => p.id === productId);
+            
+            if (!product) {
+                showToast('Product not found', 'error');
+                return;
+            }
+            
+            document.getElementById('modal-title').textContent = 'Edit Product';
+            document.getElementById('product-id').value = product.id;
+            document.getElementById('product-name').value = product.product_name;
+            document.getElementById('product-category').value = product.category;
+            document.getElementById('product-price').value = product.main_price;
+            document.getElementById('product-discount').value = product.discount_price || '';
+            document.getElementById('product-stock').value = product.stock_quantity;
+            document.getElementById('product-description').value = product.short_description || '';
+            document.getElementById('product-featured').checked = product.featured;
+            document.getElementById('product-tags').value = product.product_tags?.join(', ') || '';
+            
+            // Image
+            if (product.product_image_url) {
+                document.getElementById('product-image-url').value = product.product_image_url;
+                showImagePreview(product.product_image_url);
+            } else {
+                document.getElementById('product-image-url').value = '';
+                resetImageUpload();
+            }
+            
+            // Colors
+            const colorContainer = document.getElementById('color-options-container');
+            colorContainer.innerHTML = '';
+            if (product.colour_options && product.colour_options.length > 0) {
+                product.colour_options.forEach(color => addColorInput(color));
+            }
+            
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').classList.remove('active');
+            selectedImageFile = null;
+        }
+
+        function openDeleteModal(productId) {
+            document.getElementById('delete-product-id').value = productId;
+            document.getElementById('delete-modal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('active');
+        }
+
+        // Image upload functions
+        function resetImageUpload() {
+            document.getElementById('image-preview').style.display = 'none';
+            document.getElementById('image-preview').src = '';
+            document.getElementById('upload-text').style.display = 'block';
+            document.getElementById('upload-progress').style.display = 'none';
+            document.getElementById('image-hint').style.display = 'none';
+            document.getElementById('image-upload-area').classList.remove('has-image');
+            selectedImageFile = null;
+        }
+
+        function showImagePreview(url) {
+            document.getElementById('image-preview').src = url;
+            document.getElementById('image-preview').style.display = 'block';
+            document.getElementById('upload-text').style.display = 'none';
+            document.getElementById('upload-progress').style.display = 'none';
+            document.getElementById('image-hint').style.display = 'block';
+            document.getElementById('image-upload-area').classList.add('has-image');
+        }
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image size should be less than 5MB', 'error');
+                return;
+            }
+            
+            selectedImageFile = file;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('image-preview').src = e.target.result;
+                document.getElementById('image-preview').style.display = 'block';
+                document.getElementById('upload-text').style.display = 'none';
+                document.getElementById('image-hint').style.display = 'block';
+                document.getElementById('image-upload-area').classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadSelectedImage() {
+            if (!selectedImageFile) {
+                return document.getElementById('product-image-url').value || null;
+            }
+            
+            const progressBar = document.getElementById('progress-bar');
+            const progressContainer = document.getElementById('upload-progress');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '30%';
+            
+            try {
+                progressBar.style.width = '60%';
+                const imageUrl = await supabaseDB.uploadImage(selectedImageFile, 'product-images');
+                progressBar.style.width = '100%';
+                
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                }, 500);
+                
+                return imageUrl;
+            } catch (error) {
+                progressContainer.style.display = 'none';
+                console.error('Upload error:', error);
+                throw new Error('Failed to upload image. Please try again.');
+            }
+        }
+
+        // Drag and drop support
+        const imageUploadArea = document.getElementById('image-upload-area');
+        
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.style.borderColor = 'var(--gold)';
+            imageUploadArea.style.background = 'rgba(201, 169, 98, 0.05)';
+        });
+        
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.style.borderColor = '';
+            imageUploadArea.style.background = '';
+        });
+        
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.style.borderColor = '';
+            imageUploadArea.style.background = '';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('Image size should be less than 5MB', 'error');
+                    return;
+                }
+                
+                selectedImageFile = file;
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview').style.display = 'block';
+                    document.getElementById('upload-text').style.display = 'none';
+                    document.getElementById('image-hint').style.display = 'block';
+                    imageUploadArea.classList.add('has-image');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Color inputs
+        function addColorInput(color = '#000000') {
+            const container = document.getElementById('color-options-container');
+            const div = document.createElement('div');
+            div.className = 'admin-color-input';
+            div.innerHTML = `
+                <input type="color" value="${color}" onchange="this.nextElementSibling.value = this.value">
+                <input type="text" class="admin-form-input" value="${color}" placeholder="Color hex code" readonly>
+                <button type="button" class="admin-color-remove" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Save product
+        async function saveProduct() {
+            const form = document.getElementById('product-form');
+            const saveBtn = document.getElementById('save-btn');
+            
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            
+            try {
+                // Upload image if selected
+                let imageUrl = document.getElementById('product-image-url').value;
+                if (selectedImageFile) {
+                    imageUrl = await uploadSelectedImage();
+                }
+                
+                const productData = {
+                    product_name: document.getElementById('product-name').value,
+                    category: document.getElementById('product-category').value,
+                    main_price: parseFloat(document.getElementById('product-price').value),
+                    discount_price: document.getElementById('product-discount').value ? parseFloat(document.getElementById('product-discount').value) : null,
+                    stock_quantity: parseInt(document.getElementById('product-stock').value),
+                    short_description: document.getElementById('product-description').value,
+                    featured: document.getElementById('product-featured').checked,
+                    product_image_url: imageUrl,
+                    colour_options: Array.from(document.querySelectorAll('#color-options-container input[type="color"]')).map(input => input.value),
+                    product_tags: document.getElementById('product-tags').value.split(',').map(t => t.trim()).filter(t => t)
+                };
+                
+                if (editingProductId) {
+                    await supabaseDB.updateProduct(editingProductId, productData);
+                    showToast('Product updated successfully', 'success');
+                } else {
+                    await supabaseDB.addProduct(productData);
+                    showToast('Product added successfully', 'success');
+                }
+                
+                closeModal();
+                loadProducts();
+                loadStats();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                showToast(error.message || 'Error saving product. Please try again.', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Product';
+            }
+        }
+
+        // Delete product
+        async function confirmDelete() {
+            const productId = document.getElementById('delete-product-id').value;
+            
+            try {
+                await supabaseDB.deleteProduct(productId);
+                showToast('Product deleted successfully', 'success');
+                closeDeleteModal();
+                loadProducts();
+                loadStats();
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                showToast('Error deleting product. Please try again.', 'error');
+            }
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: '✓',
+                error: '✕',
+                info: 'ℹ',
+                warning: '⚠'
+            };
+            
+            toast.innerHTML = `
+                <span style="font-size: 1.25rem; font-weight: bold;">${icons[type] || icons.info}</span>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+            
+            loadStats();
+            loadProducts();
+            
+            // Search and filter
+            document.getElementById('product-search').addEventListener('input', filterProducts);
+            document.getElementById('category-filter').addEventListener('change', filterProducts);
+        });
+    </script>
+</body>
+</html>
